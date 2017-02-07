@@ -99,7 +99,10 @@ void *calloc(size_t num, size_t size)
 void *realloc(void *ptr, size_t new_size)
 {
     if (ptr == NULL)
-        return NULL;
+        return malloc(new_size);
+
+    if (new_size == 0)
+        return ptr;
 
     block_info* block = (block_info*)(ptr - INFO_SZ);
 
