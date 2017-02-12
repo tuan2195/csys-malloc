@@ -1,4 +1,9 @@
-#include "free.h"
+#include "malloc.h"
+
+extern pthread_mutex_t mutex;
+extern int free_blocks[NUM_BINS];
+extern int free_reqs[NUM_BINS];
+extern int num_blocks[NUM_BINS];
 
 void free(void* ptr)
 {
@@ -6,12 +11,23 @@ void free(void* ptr)
         return;
 
     block_info* block = (block_info*)(ptr - INFO_SZ);
+    bin_type bin = size_to_bin(block->size - INFO_SZ);
+
+    pthread_mutex_lock(&mutex);
+
     block->next = NULL;
 
-    bin_type type = size_to_bin(block->size - INFO_SZ);
-
-    if (type == BINXL)
+    if (bin == BINXL)
+    {
+        --num_blocks[bin];
         munmap((void*)block - INFO_SZ, block->size + INFO_SZ);
+    }
     else
-        add_to_list(block, type);
+    {
+        ++free_blocks[bin];
+        add_to_list(block, bin);
+    }
+
+    ++free_reqs[bin];
+    pthread_mutex_unlock(&mutex);
 }

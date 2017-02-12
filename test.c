@@ -53,5 +53,7 @@ int main(int argc, char **argv)
     }
     pthread_join(ptid, NULL);
 
+    malloc_stats();
+
     return 0;
 }

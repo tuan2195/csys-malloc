@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <pthread.h>
+#include <errno.h>
 
 #ifndef UTILS_H
 #define UTILS_H
@@ -10,13 +11,14 @@
 #define PAGE_SZ sysconf(_SC_PAGESIZE)
 #define INFO_SZ sizeof(struct _block_info)
 #define ARENA_SZ sizeof(struct _arena_info)
+#define NUM_BINS 4
 
 typedef enum
 {
     BIN16 = 0,
     BIN64 = 1,
     BIN512 = 2,
-    BINXL = -1
+    BINXL = 3
 } bin_type;
 
 typedef struct _block_info
@@ -38,7 +40,5 @@ size_t bin_to_size(bin_type bin);
 arena_t* alloc_arena();
 void *memset(void* s, int c, size_t n);
 void *memcpy(void *dest, const void *src, size_t n);
-void *calloc(size_t num, size_t size);
-void *realloc(void *ptr, size_t new_size);
 
 #endif

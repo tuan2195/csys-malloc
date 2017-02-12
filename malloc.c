@@ -1,5 +1,11 @@
 #include "malloc.h"
 
+extern pthread_mutex_t mutex;
+
+extern int num_blocks[NUM_BINS];
+extern int free_blocks[NUM_BINS];
+extern int malloc_reqs[NUM_BINS];
+
 void* malloc(size_t size)
 {
     static __thread arena_t* arena = NULL;
@@ -9,6 +15,9 @@ void* malloc(size_t size)
 
     bin_type bin = size_to_bin(size);
 
+    pthread_mutex_lock(&mutex);
+    ++malloc_reqs[bin];
+
     if (bin == BINXL)
     {
         void *ptr = mmap(0, size + INFO_SZ, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
@@ -16,6 +25,8 @@ void* malloc(size_t size)
         block_info* new_block = (block_info*) ptr;
         new_block->size = size;
         new_block->next = NULL;
+        ++num_blocks[bin];
+        pthread_mutex_unlock(&mutex);
         return (ptr + INFO_SZ);
     }
 
@@ -36,11 +47,15 @@ void* malloc(size_t size)
         new_block->size = bin_to_size(bin);
         new_block->next = NULL;
 
+        ++num_blocks[bin];
+        pthread_mutex_unlock(&mutex);
         return (block_start + INFO_SZ);
     }
     else
     {
         block->next = NULL;
+        --free_blocks[bin];
+        pthread_mutex_unlock(&mutex);
         return ((void*)block + INFO_SZ);
     }
 }
