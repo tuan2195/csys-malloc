@@ -5,7 +5,17 @@ extern int free_blocks[NUM_BINS];
 extern int free_reqs[NUM_BINS];
 extern int num_blocks[NUM_BINS];
 
+static void __free(void* ptr);
+void (*__free_hook) (void*, const void *) = NULL;
+
 void free(void* ptr)
+{
+    __free_hook ?
+    __free_hook(ptr, CALLER_ADDR):
+    __free(ptr);
+}
+
+static void __free(void* ptr)
 {
     if (ptr == NULL)
         return;

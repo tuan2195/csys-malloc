@@ -6,7 +6,17 @@ extern int num_blocks[NUM_BINS];
 extern int free_blocks[NUM_BINS];
 extern int malloc_reqs[NUM_BINS];
 
+static void* __malloc(size_t size);
+void *(*__malloc_hook) (size_t, const void *) = NULL;
+
 void* malloc(size_t size)
+{
+    return __malloc_hook ?
+           __malloc_hook(size, CALLER_ADDR):
+           __malloc(size);
+}
+
+static void* __malloc(size_t size)
 {
     static __thread arena_t* arena = NULL;
 

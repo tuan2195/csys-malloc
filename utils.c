@@ -106,7 +106,7 @@ void malloc_stats()
 
     for (int i = 0; i < NUM_BINS; ++i)
     {
-        printf("----------BIN %d----------\n", i);
+        printf("------------BIN %d------------\n", i);
         printf("Total number of blocks: %d\n", num_blocks[i]);
         printf("Used blocks: %d\n", num_blocks[i]-free_blocks[i]);
         printf("Free blocks: %d\n", free_blocks[i]);

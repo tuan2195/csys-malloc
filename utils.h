@@ -8,9 +8,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#define PAGE_SZ sysconf(_SC_PAGESIZE)
-#define INFO_SZ sizeof(struct _block_info)
-#define ARENA_SZ sizeof(struct _arena_info)
+#define PAGE_SZ (sysconf(_SC_PAGESIZE))
+#define INFO_SZ (sizeof(struct _block_info))
+#define ARENA_SZ (sizeof(struct _arena_info))
+#define CALLER_ADDR (__builtin_return_address(0))
 #define NUM_BINS 4
 
 typedef enum

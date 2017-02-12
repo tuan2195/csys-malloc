@@ -1,7 +1,17 @@
 #include "utils.h"
 #include "malloc.h"
 
+static void *__realloc(void *ptr, size_t new_size);
+void *(*__realloc_hook) (void*, size_t, const void *) = NULL;
+
 void *realloc(void *ptr, size_t new_size)
+{
+    return __realloc_hook ?
+           __realloc_hook(ptr, new_size, CALLER_ADDR):
+           __realloc(ptr, new_size);
+}
+
+static void *__realloc(void *ptr, size_t new_size)
 {
     if (ptr == NULL)
         return malloc(new_size);
