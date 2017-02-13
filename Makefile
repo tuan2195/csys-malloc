@@ -26,6 +26,6 @@ check:	lib test
 	@echo -e "\n"
 
 dist: clean
-	dir=`basename $$PWD`; cd ..; tar cvf $$dir.tar ./$$dir; gzip $$dir.tar
+	dir=`basename $$PWD`; cd ..; tar cv --exclude=./$$dir/.git -f $$dir.tar ./$$dir; gzip $$dir.tar
 
 
